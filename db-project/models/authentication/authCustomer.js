@@ -23,7 +23,7 @@ class CustomerAuth{
             return new Promise((resolve, reject) => {
                 pool.getConnection(function(err, connection) {
 
-                let { name,contact_no,hash,email,type, } = cusDetails[0];
+                let { name,contact_no,password,email,type,customer_type} = cusDetails[0];
 
                 if (err) {
                     res.status(500).send('Internal Server Error')
@@ -32,7 +32,11 @@ class CustomerAuth{
                 } // not connected!
                 
                 // Use the connection
-                connection.query(`SELECT create_cus(?,?,?,?,?)`,[email,contact_no,hash,type,name], function (error, results, fields) {
+                //INSERT INTO `testdb`.`user` (`email`, `password`, `phone`, `type`, `name`) VALUES ('avsud', 'jkasd', 'jasndj', 'lansod', 'kabjsd');
+                console.log([email, password, contact_no,customer_type,name]);
+                connection.query(`INSERT INTO user(email, password, phone, type, name) VALUES (?,?,?,?,?)`,
+                                [email, password, contact_no,customer_type,name], 
+                                function (error, results, fields) {
                     console.log(results);
                     console.log(fields);
 

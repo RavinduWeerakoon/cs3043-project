@@ -41,30 +41,33 @@ module.exports.login_get = (req,res) => {
  */
 
 module.exports.signup_post = (req,res) => {
+    
     const {
         email,
         name,
         type,
         password,
-        contact_no
+        contact_no,
+        customer_type,
     } = req.body;
 
     // ************ to-do - validating ********** //
 
     // hashing the password
-    bcrypt.genSalt(10, (err, salt) => {
-        if(err){
-            res.status(500).send('Internal Server Error')
-        }
-        bcrypt.hash(password,salt,(err,hash) => {
+    // bcrypt.genSalt(10, (err, salt) => {
+    //     if(err){
+    //         res.status(500).send('Internal Server Error')
+    //     }
+    //     bcrypt.hash(password,salt,(err,hash) => {
 
-            if(err){
-                console.error('[error] - hashing password - contoller/authcontroller '+err)
-                res.status(500).send('Internal Server Error')
-                return 
-            }
+    //         if(err){
+    //             console.error('[error] - hashing password - contoller/authcontroller '+err)
+    //             res.status(500).send('Internal Server Error')
+    //             return 
+    //         }
 
             // store in database
+            console.log(email);
             AuthCustomer.registerCustomer(
                 pool,
                 res,
@@ -73,8 +76,9 @@ module.exports.signup_post = (req,res) => {
                     email:email,
                     name:name,
                     type:type,
+                    password:password,
                     contact_no:contact_no,
-                    hash:hash
+                    customer_type:customer_type
                 })
             .then(data => {
                 // if success redirect to the login page
@@ -87,8 +91,8 @@ module.exports.signup_post = (req,res) => {
                     res.status(400).json({error:'this email alredy used'})
                     console.log('[error] - sigining in user [email is laready used] - contoller/authcontroller '+ err);
             })
-        })
-    })
+//         })
+//     })
 }
 /****
  * TODO
@@ -162,3 +166,7 @@ module.exports.logout_get = (req,res) => {
                 })
 }
 
+module.exports.test_request = (req,res) =>{
+    console.log(req.body)
+    res.status(200).json({message:'success'})
+}

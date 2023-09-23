@@ -3,7 +3,6 @@ CREATE FUNCTION create_cus(
 	email varchar(100),
 	contact_number varchar(50),
   password varchar(300),
-	
 	customer_name varchar(50),
   customer_type varchar(30)
   )

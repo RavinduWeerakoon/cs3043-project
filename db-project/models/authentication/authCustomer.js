@@ -34,23 +34,36 @@ class CustomerAuth{
                 // Use the connection
                 //INSERT INTO `testdb`.`user` (`email`, `password`, `phone`, `type`, `name`) VALUES ('avsud', 'jkasd', 'jasndj', 'lansod', 'kabjsd');
                 console.log([email, password, contact_no,customer_type,name]);
-                connection.query(`INSERT INTO user(email, password, phone, type, name) VALUES (?,?,?,?,?)`,
-                                [email, password, contact_no,customer_type,name], 
+                let query = `INSERT INTO user(email, password, phone, type, name) VALUES (?,?,?,?,?)`
+                connection.query(query,
+                                [email, password, contact_no,"customer",name], 
                                 function (error, results, fields) {
-                    console.log(results);
-                    console.log(fields);
 
-                // When done with the connection, release it.
-                    connection.release();
+                       
 
-                // Handle error after the release.
-                    if (error) {
-                        reject(error)
-                    }
+                 
 
-                    resolve(results) ;
-                // Don't use the connection here, it has been returned to the pool.
+                            if(!error){
+
+                            connection.query(`INSERT INTO customer(user_ID, customer_type, workplace_address) VALUES (?, ?, ?)`,
+                                             [results.insertId,customer_type,"abc"],
+                                             (error, results, fields)=>{
+                                                console.log("called")
+                                                connection.release()
+                                                if(error){
+                                                    console.log(error);
+                                                    reject(error);
+                                                    resolve(results);
+                                                }
+                                             });
+
+                            }                                             
+
+                            resolve(results);
+                        // Don't use the connection here, it has been returned to the pool.
                 });
+
+                
             });
         })
     }

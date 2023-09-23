@@ -114,7 +114,7 @@ class AuthServices {
     
             return new Promise((resolve, reject) => {
                 try {
-                    const match = bcrypt.compare(password, hash); // compare hash
+                    const match = (hash==password); // compare hash
                     resolve(match);
                 } catch (error) {
                     reject(error)

@@ -32,6 +32,8 @@ module.exports.login_get = (req,res) => {
 }
 
 
+
+
 /****
  * TODO
  *  - need to validate request data - done
@@ -107,50 +109,48 @@ module.exports.login_post = (req,res) => {
         email,
         password
     } = req.body;
-        console.log(email)
-
-    // *************** TODO - Validating ************* //
-
-    // check if user exist
+    
+    console.log(req.body);
     LogInUser.getUserInfo(pool,res,req,{email})
     .then(data => {
 
-        // user exist , type and hashed password arrived from database
-        let userType = data[0][0].type;
-        let hash = data[0][0].password;
-        let user = AuthServices.extractData(userType,data);
-
-        AuthServices.checkPassword(hash,password)
+       
+        console.log(data);
+        AuthServices.checkPassword(data[0].password,password)
         .then(matched => {
 
             console.log('hash compare done -' + matched)
 
             if(matched){
 
-                // creatting token
+                //should have to update just create the dummy token
+                const user = data[0];
                 const token = AuthServices.createToken(user)
 
-                // httpOnly means this token cannot change by frontend javascript code
+                
                 res.cookie('jwt', token , { httpOnly : true,maxAge:AuthServices.expire * 1000})
 
 
-                // redirection
-                AuthServices.redirect(res,userType,false)
+                
+                // AuthServices.redirect(res, userType,false)
+
+                res.status(200).json("login success");
             }
 
         }).catch(err => {
 
             console.log('[error] - checking password - contoller/authcontroller '+err)
-            // error occured while hash comparing
+            
             res.status(500).send('Internal Server Error')
 
         })
     })
     .catch(err => {
 
-        // if user not in the database db throws INVALID_LOGIN exception
+        
         if(err.sqlMessage === 'INVALID_LOGIN')
             res.status(400).json({error:'check password or email again'})
+            console.log(err);
             console.log('[error] - invalid login attempt - contoller/authcontroller '+err);
     })
 }
